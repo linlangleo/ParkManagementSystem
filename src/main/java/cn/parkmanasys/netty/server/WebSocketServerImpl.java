@@ -108,7 +108,6 @@ public class WebSocketServerImpl implements WebSocketService, HttpService{
             ChannelFuture future = sb.bind(host,port).addListener(new ChannelFutureListener() {
                 
                 public void operationComplete(ChannelFuture future) throws Exception {
-                    // TODO Auto-generated method stub
                     if(future.isSuccess()){
                         
                         System.out.println("websocket started");
@@ -119,12 +118,10 @@ public class WebSocketServerImpl implements WebSocketService, HttpService{
             future.channel().closeFuture().addListener(new ChannelFutureListener() {
                 
                 public void operationComplete(ChannelFuture future) throws Exception {
-                    // TODO Auto-generated method stub
                     System.out.println("channel is closed");
                 }
             }).sync();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally{
             
@@ -140,8 +137,6 @@ public class WebSocketServerImpl implements WebSocketService, HttpService{
 
     public void handleHttpRequset(ChannelHandlerContext ctx,
             FullHttpRequest request) {
-        // TODO Auto-generated method stub
-        
         
         if(isWebSocketUpgrade(request)){
             
@@ -167,8 +162,6 @@ public class WebSocketServerImpl implements WebSocketService, HttpService{
     }
 
     public void handleFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-        // TODO Auto-generated method stub
-        
         if(frame instanceof TextWebSocketFrame){
             
             String text = ((TextWebSocketFrame) frame).text();

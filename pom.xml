@@ -187,7 +187,7 @@
 		<!-- Spring-AOP start-->
         <!-- Spring-AOP end -->
         
-		<!--文件压缩 -->
+		<!--图片压缩 -->
 		<dependency>
        	    <groupId>net.coobird</groupId>
        	    <artifactId>thumbnailator</artifactId>

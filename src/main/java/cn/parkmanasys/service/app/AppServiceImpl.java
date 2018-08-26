@@ -34,9 +34,8 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import net.coobird.thumbnailator.Thumbnails;
 
 /**
- * 接口实现
- * 
- * @author 刘大仙
+ * app端接口-webservice实现
+ * @author linlangleo
  *
  */
 @WebService(serviceName = "AppService", // 与接口中指定的name一致
@@ -48,7 +47,11 @@ public class AppServiceImpl implements AppService{
 	@Resource
 	private CarOwnerUserMapper carOwnerUserMapper;
 	
-
+	/**
+     * 登陆
+     * @param name
+     * @param password
+     */
 	@Override
 	public CarOwnerUser appLogin(String name, String password) {
 		CarOwnerUser carOwner = null;

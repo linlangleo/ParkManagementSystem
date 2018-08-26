@@ -189,7 +189,7 @@
 				<div class="video" style="width:800px;height:450px;">
 <%-- 					<h5 align=center><img src="${pageContext.request.contextPath }/ParkAccount/video/img/timgbg.jpg"/><span>未放入视频</span><a>X</a></h5> --%>
 						
-					<iframe height="800px" width="650px"  src="http://10.210.127.16:8080/jsfs.html"></iframe>
+					<iframe height="800px" width="650px"  src="http://10.15.206.116:8080/jsfs.html"></iframe>
 				</div>
 			</li>
 			
@@ -197,7 +197,7 @@
 				<div class="video" style="width:800px;height:450px;">
 <%-- 					<h5 align=center><img src="${pageContext.request.contextPath }/ParkAccount/video/img/timgbg.jpg"/><span>未放入视频</span><a>X</a></h5> --%>
 						
-					<iframe height="800px" width="650px"  src="http://10.210.127.16:8080/jsfs.html"></iframe>
+					<iframe height="800px" width="650px"  src="http://10.15.206.116:8080/jsfs.html"></iframe>
 				</div>
 			</li>
 		</ul>
