@@ -16,13 +16,14 @@ import java.lang.annotation.Target;
 @Documented
 public @interface SystemLog {
 	/**
-     * 日志类型-(操作日志:OperateLog/接口日志:InterfaceLog)
+     * 日志类型-(OperateLog:操作日志/InterfaceLog:接口日志)
      * @return
      */
 	LogTypeEnum logType() ;
 	
 	/**
      * 操作描述，可为空
+     * 操作日志用
      * @return
      */
 	String operationDesc() default "";

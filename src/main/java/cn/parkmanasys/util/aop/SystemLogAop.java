@@ -1,6 +1,8 @@
 package cn.parkmanasys.util.aop;
 
 import java.net.URLDecoder;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -15,8 +17,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import cn.parkmanasys.dao.SysInterfaceManagerDetailsMapper;
+import cn.parkmanasys.dao.SysInterfaceManagerMapper;
 import cn.parkmanasys.dao.SysOperationLogMapper;
 import cn.parkmanasys.entity.ParkingAccount;
+import cn.parkmanasys.entity.SysInterfaceManagerDetails;
 import cn.parkmanasys.entity.SysOperationLog;
 import cn.parkmanasys.service.OperationRecord.SysOperationLogService;
 import cn.parkmanasys.util.annotation.LogTypeEnum;
@@ -32,6 +37,10 @@ import cn.parkmanasys.util.annotation.SystemLog;
 public class SystemLogAop {
 	@Resource
 	private SysOperationLogMapper sysOperationLogMapper;
+	@Resource
+	private SysInterfaceManagerMapper sysInterfaceManagerMapper;
+	@Resource
+	private SysInterfaceManagerDetailsMapper sysInterfaceManagerDetailsMapper;
 	
 	//注解切入点
 	@Pointcut("@annotation(cn.parkmanasys.util.annotation.SystemLog)")
@@ -56,7 +65,54 @@ public class SystemLogAop {
 			//执行后
 			return proceed;
 		}else if(log.logType() == LogTypeEnum.INTERFACE_LOG){
-			
+			//当前时间
+			LocalDateTime date = LocalDateTime.now();
+			//获取客户端ip
+			String ip = this.getIp();
+	        //获取该方法的id
+//	        Integer id = sysInterfaceManagerMapper.queryByOpenName(className);
+	        // result的值就是被拦截方法的返回值
+	        Object result = new Object();
+//	        if (verdictIp(ip).equals("no")) {
+//	            throw exceptionManager.createByCode("INTE_IP_0001");
+//	        }
+//	        if (id == null) {
+//	        	//方法未登记，不允许访问
+//	            throw exceptionManager.createByCode("INTE_METH_0001");
+//	        }
+	        try{
+	        	//保存请求参数 调用结果 调用时间 当前时间 ip地址 状态到日志 
+	        	//请求参数
+	        	String args = this.getArgs();
+	        	//调用时间
+	        	//LocalDateTime now  = LocalDateTime.now();
+	        	Date now = new Date();
+	        	//正常调用结果
+	        	result = pjp.proceed();
+	        	//正常 NORMAL("正常") ERRO("异常")
+	        	String status = "NORMAL";
+	        	//结束时间
+	        	LocalDateTime overDate = LocalDateTime.now();
+	        	String time = this.countTime(date, overDate);
+	        	
+	        	//入库
+	        	SysInterfaceManagerDetails sysInterfaceManaDet = new SysInterfaceManagerDetails();
+	        	sysInterfaceManaDet.setManagerId(0);//暂无
+	        	sysInterfaceManaDet.setTime(time);
+	        	sysInterfaceManaDet.setIp(ip);
+	        	sysInterfaceManaDet.setStatus(status);
+	        	sysInterfaceManaDet.setRequest(args);
+	        	sysInterfaceManaDet.setInfaceUrl(url);
+	        	sysInterfaceManaDet.setStartTime(now);
+	        	sysInterfaceManaDet.setResponse(result.toString());
+	        	sysInterfaceManaDet.setCreateTime(new Date());
+	        	sysInterfaceManaDet.setUpdateTime(new Date());
+	        	sysInterfaceManaDet.setCreateBy("admin");
+	        	sysInterfaceManaDet.setUpdateBy("admin");
+	        	sysInterfaceManagerDetailsMapper.saveAndFlush(sysInterfaceManaDet);
+	        }catch(Throwable throwable){
+	        	
+	        }
 		}
 		
 		return proceed;
@@ -99,8 +155,28 @@ public class SystemLogAop {
 		soLog.setCreationTime(new Date());
 		sysOperationLogMapper.saveAndFlush(soLog);
 	}
-	
 
+    /**
+     * @author linlangleo
+     * @desc .获取请求ip
+     */
+	private String getIp() {
+		//获取请求者的ip
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.
+				getRequestAttributes()).getRequest();
+		String ip = request.getHeader("x-forwarded-for");
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return ip;
+	}
+	
     /**
      * @author linlangleo
      * @desc .获取请求路径
@@ -142,4 +218,34 @@ public class SystemLogAop {
         return queryString;
     }
 
+    /**
+     * @author linlangleo
+     * @desc .ip段判断
+     */
+//    private String verdictIp(String ip) {
+//        //获取id
+//        List<Integer> ids = sapApiLogAopService.urlByIp(ip);
+//        if (ids != null && ids.size() != 0) {
+//            for (Integer id : ids) {
+//                Integer count = sapApiLogAopService.urlById(id, ip);
+//                if (count != null) {
+//                    return "yes";
+//                }
+//            }
+//        }
+//        return "no";
+//    }
+    
+    /**
+     * @author linlangleo
+     * @desc 计算两个时间的毫秒差
+     */
+    private String countTime(LocalDateTime startTime, LocalDateTime endTime) {
+    	long start = startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    	long end = endTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    	long deduc = end -start;
+    	
+    	return String.valueOf(deduc);
+    }
+    
 }
