@@ -31,6 +31,7 @@ public class SysInterfaceManagerController {
 	@SystemLog(logType = LogTypeEnum.INTERFACE_LOG, operationDesc = "登陆系统")
 	@RequestMapping(value = "/getinterfaceinfo", method = RequestMethod.POST)
 	public List<SysInterfaceManager> getInterfaceInfo(){
+		int i = 1/0;
 		List<SysInterfaceManager> simList = parkingInfoService.getInterfaceInfo(null, null);
 		
 		return simList;

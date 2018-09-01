@@ -96,7 +96,8 @@ public class SystemLogAop {
 	        	String time = this.countTime(date, overDate);
 	        	
 	        	//入库
-	        	SysInterfaceManagerDetails sysInterfaceManaDet = new SysInterfaceManagerDetails();
+	        	SysInterfaceManagerDetails sysInterfaceManaDet = 
+	        			new SysInterfaceManagerDetails();
 	        	sysInterfaceManaDet.setManagerId(0);//暂无
 	        	sysInterfaceManaDet.setTime(time);
 	        	sysInterfaceManaDet.setIp(ip);
@@ -110,8 +111,49 @@ public class SystemLogAop {
 	        	sysInterfaceManaDet.setCreateBy("admin");
 	        	sysInterfaceManaDet.setUpdateBy("admin");
 	        	sysInterfaceManagerDetailsMapper.saveAndFlush(sysInterfaceManaDet);
-	        }catch(Throwable throwable){
 	        	
+	        	return result;
+	        }catch(Throwable throwable){
+	        	//保存请求参数 调用结果 调用时间 ip地址到日志
+	        	//请求参数
+	        	String args = this.getArgs();
+	        	//调用时间
+	        	Date now = new Date();
+	        	//异常结果
+	        	result = throwable.toString();
+	        	String info = (String) result;
+	        	//异常 NORMAL("正常") ERRO("异常")
+	        	String status = null;
+	        	
+	        	//处理校验异常
+	        	//跳过
+	        	//处理自定义异常
+	        	//跳过
+	        	
+	        	//结束时间
+	        	LocalDateTime endTime = LocalDateTime.now();
+	        	String time = this.countTime(date, endTime);
+	        	//记录到接口管理中
+	        	status = "ERRO";
+
+	        	//入库
+	        	SysInterfaceManagerDetails sysInterfaceManaDet = 
+	        			new SysInterfaceManagerDetails();
+	        	sysInterfaceManaDet.setManagerId(0);//暂无
+	        	sysInterfaceManaDet.setTime(time);
+	        	sysInterfaceManaDet.setIp(ip);
+	        	sysInterfaceManaDet.setStatus(status);
+	        	sysInterfaceManaDet.setRequest(args);
+	        	sysInterfaceManaDet.setInfaceUrl(url);
+	        	sysInterfaceManaDet.setStartTime(now);
+	        	sysInterfaceManaDet.setResponse(info);
+	        	sysInterfaceManaDet.setCreateTime(new Date());
+	        	sysInterfaceManaDet.setUpdateTime(new Date());
+	        	sysInterfaceManaDet.setCreateBy("admin");
+	        	sysInterfaceManaDet.setUpdateBy("admin");
+	        	sysInterfaceManagerDetailsMapper.saveAndFlush(sysInterfaceManaDet);
+	        	
+	        	return result;
 	        }
 		}
 		
